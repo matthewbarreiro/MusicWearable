@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.github.pocmo.sensordashboard.data.Sensor;
 import com.github.pocmo.sensordashboard.events.BusProvider;
 import com.github.pocmo.sensordashboard.events.NewSensorEvent;
+import com.github.pocmo.sensordashboard.events.SensorUpdatedEvent;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
@@ -31,7 +32,8 @@ import com.squareup.otto.Subscribe;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+{
     private RemoteSensorManager remoteSensorManager;
 
     Toolbar mToolbar;
@@ -41,7 +43,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView mNavigationView;
     private Menu mNavigationViewMenu;
     private List<Node> mNodes;
-
+    private float curHeartRate;
+    private float curStepRate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -257,6 +260,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //pager.getAdapter().notifyDataSetChanged();
         emptyState.setVisibility(View.GONE);
         notifyUSerForNewSensor(event.getSensor());
+
+    }
+
+    @Subscribe
+    public void onSensorUpdatedEvent(final SensorUpdatedEvent event)
+    {
+        if(event.getSensor().getId()==13)
+        {
+            curStepRate=event.getDataPoint().getValues()[0];
+        }
+        else
+        {
+            curHeartRate=event.getDataPoint().getValues()[0];
+        }
     }
 
 
