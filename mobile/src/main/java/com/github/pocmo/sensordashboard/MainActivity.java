@@ -274,7 +274,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             curHeartRate=event.getDataPoint().getValues()[0];
         }
+        TextView textView = (TextView) findViewById(R.id.empty_state);
+        textView.append(curHeartRate+", "+curStepRate+", "+"\n");
     }
+
+
 
 
 //    private void printData (View emptyState){
