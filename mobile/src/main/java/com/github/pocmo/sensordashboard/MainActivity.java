@@ -172,9 +172,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         List<Sensor> sensors = RemoteSensorManager.getInstance(this).getSensors();
         //pager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager(), sensors));
 
-        if (sensors.size() > 0) {
-            emptyState.setVisibility(View.VISIBLE);
-        }
+//        if (sensors.size() > 0) {
+//            emptyState.setVisibility(View.VISIBLE);
+//        }
 //            emptyState.setVisibility(View.GONE);
 //        } else {
 //            emptyState.setVisibility(View.VISIBLE);
