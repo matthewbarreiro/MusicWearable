@@ -70,8 +70,8 @@ public class SensorReceiverService extends WearableListenerService {
         float[] values = dataMap.getFloatArray(DataMapKeys.VALUES);
 
         Log.d(TAG, "Received sensor data " + sensorType + " = " + Arrays.toString(values));
-
-        sensorManager.addSensorData(sensorType, accuracy, timestamp, values);
+        if((sensorType==13)||(sensorType==21))      //only add new data if it's step or heart rate
+            sensorManager.addSensorData(sensorType, accuracy, timestamp, values);
     }
 
 
