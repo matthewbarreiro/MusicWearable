@@ -1,3 +1,29 @@
+#MusicMQP
+possibly useful:
+	
+~~~~
+public class MainActivity extends Activity {
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+	}
+
+	public void sendMessage(View v){
+
+
+		
+		TextView textView = (TextView) findViewById(R.id.empty_state);
+		textView.append(messageString+"\n")
+	}
+
+}
+	
+~~~~
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
 # SensorDashboard
 
 A sensor dashboard for Android plotting all sensor data of your Android wearable.
