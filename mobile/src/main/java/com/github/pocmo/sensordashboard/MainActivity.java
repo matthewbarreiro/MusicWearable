@@ -7,6 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -40,7 +41,7 @@ import com.github.pocmo.sensordashboard.MusicService.MusicBinder;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RefreshView
 {
 
     //wear vars
@@ -51,16 +52,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView mNavigationView;
     private Menu mNavigationViewMenu;
     private List<Node> mNodes;
-    private float curHeartRate;
-    private float curStepRate;
+    //private float curHeartRate;
+    //private float curStepRate;
 
 
     //music player vars
     private ArrayList<Song> songList;
+    //private ArrayList<Song> filteredSongList;
     private ListView songView;
     private MusicService musicSrv;
     private Intent playIntent;
     private boolean musicBound=false;
+
+    private static final String TAG = "MainActivity";
+    private int debug=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,12 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //initToolbar();
 //        initViewPager();
 
-
-
-
-
         remoteSensorManager = RemoteSensorManager.getInstance(this);
-
 
 //        final EditText tagname = (EditText) findViewById(R.id.tagname);
 
@@ -121,25 +121,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-
-
         songView = (ListView)findViewById(R.id.song_list);
         songList = new ArrayList<Song>();
         getSongList();
 
+        if(debug==1)
+            Log.d(TAG,"Create");
+
+    }
+
+    public void refresh(ArrayList<Song> songs)
+    {
+        if(debug==1)
+            Log.d(TAG,"Refresh Ran");
         //sort
-        Collections.sort(songList, new Comparator<Song>(){
+        Collections.sort(songs, new Comparator<Song>(){
             public int compare(Song a, Song b){
                 return a.getTitle().compareTo(b.getTitle());
             }
         });
-        SongAdapter songAdt = new SongAdapter(this, songList);
+        SongAdapter songAdt = new SongAdapter(this, songs);
         songView.setAdapter(songAdt);
-
-
     }
-
-
 
     private void initToolbar() {
         setSupportActionBar(mToolbar);
@@ -297,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         notifyUSerForNewSensor(event.getSensor());
 
     }
-
+/*
     @Subscribe
     public void onSensorUpdatedEvent(final SensorUpdatedEvent event)
     {
@@ -312,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView textView = (TextView) findViewById(R.id.empty_state);
         textView.append(curHeartRate+", "+curStepRate+", "+"\n");
     }
-
+*/
 
 
 
@@ -393,21 +396,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-                if(curHeartRate>=80)
-                {
-                    if(thisTitle.charAt(0)<'O')
-                        songList.add(new Song(thisId, thisTitle, thisArtist));
-
-                }
-                else
-                {
-                    if(thisTitle.charAt(0)>='O')
-                        songList.add(new Song(thisId, thisTitle, thisArtist));
-                }
+//                if(curHeartRate>=80)
+//                {
+//                    if(thisTitle.charAt(0)<'O')
+//                        filteredSongList.add(new Song(thisId, thisTitle, thisArtist));
+//
+//                }
+//                else
+//                {
+//                    if(thisTitle.charAt(0)>='O')
+//                        filteredSongList.add(new Song(thisId, thisTitle, thisArtist));
+//                }
+                songList.add(new Song(thisId, thisTitle, thisArtist));
             }
             while (musicCursor.moveToNext());
         }
     }
+
+
 
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection()
@@ -416,9 +422,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onServiceConnected(ComponentName name, IBinder service)
         {
+            if(debug==1)
+                Log.d(TAG, "Service Connected");
             MusicBinder binder = (MusicBinder)service;
             //get service
             musicSrv = binder.getService();
+            musicSrv.setRefreshView(MainActivity.this);
             //pass list
             musicSrv.setList(songList);
             musicBound = true;
@@ -437,8 +446,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
         if(playIntent==null){
             playIntent = new Intent(this, MusicService.class);
-            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
         }
     }
 }

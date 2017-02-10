@@ -16,6 +16,15 @@ import android.util.Log;
  * Created by Liam on 2017-02-02.
  */
 
+import com.squareup.otto.Subscribe;
+import com.github.pocmo.sensordashboard.data.Sensor;
+import com.github.pocmo.sensordashboard.events.BusProvider;
+import com.github.pocmo.sensordashboard.events.NewSensorEvent;
+import com.github.pocmo.sensordashboard.events.SensorUpdatedEvent;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener
@@ -25,9 +34,18 @@ public class MusicService extends Service implements
     private MediaPlayer player;
     //song list
     private ArrayList<Song> songs;
+    private ArrayList<Song> filteredSongs;
     //current position
     private int songPosn;
     private final IBinder musicBind = new MusicBinder();
+
+    private float curHeartRate;
+    private float curStepRate;
+
+    private static final String TAG = "Music Service";
+    private int debug=1;
+
+    private RefreshView refreshView;
 
 
     @Override
@@ -44,13 +62,21 @@ public class MusicService extends Service implements
         return false;
     }
 
+    public void setRefreshView(RefreshView refresher)
+    {
+        refreshView=refresher;
+    }
+
     public void playSong()
     {
         //reset mediaplayer
         player.reset();
 
         //get song
-        Song playSong = songs.get(songPosn);
+        if(debug==1)
+            Log.d(TAG,"Position = "+songPosn);
+
+        Song playSong = filteredSongs.get(songPosn);
         //get id
         long currSong = playSong.getID();
         //set uri
@@ -79,6 +105,7 @@ public class MusicService extends Service implements
         //create player
         player = new MediaPlayer();
         initMusicPlayer();
+
     }
 
     public void initMusicPlayer()
@@ -99,11 +126,33 @@ public class MusicService extends Service implements
     public void setList(ArrayList<Song> theSongs)
     {
         songs=theSongs;
+        filteredSongs = new ArrayList<Song>();
+        filterSongs();
+        refreshView.refresh(filteredSongs);
+    }
+
+    public void filterSongs()
+    {
+        if(filteredSongs!=null)
+            filteredSongs.clear();
+        for(Song song:songs) {
+            if (curHeartRate >= 80)
+            {
+                if (song.getTitle().charAt(0) < 'O')
+                    filteredSongs.add(song);
+            } else
+            {
+                if (song.getTitle().charAt(0) >= 'O')
+                    filteredSongs.add(song);
+            }
+        }
     }
 
     @Override
-    public void onCompletion(MediaPlayer mediaPlayer) {
-
+    public void onCompletion(MediaPlayer mediaPlayer)
+    {
+        filterSongs();
+        refreshView.refresh(filteredSongs);
     }
 
     @Override
@@ -123,5 +172,20 @@ public class MusicService extends Service implements
         MusicService getService() {
             return MusicService.this;
         }
+    }
+
+    @Subscribe
+    public void onSensorUpdatedEvent(final SensorUpdatedEvent event)
+    {
+        if(event.getSensor().getId()==13)
+        {
+            curStepRate=event.getDataPoint().getValues()[0];
+        }
+        else
+        {
+            curHeartRate=event.getDataPoint().getValues()[0];
+        }
+        //TextView textView = (TextView) findViewById(R.id.empty_state);
+        //textView.append(curHeartRate+", "+curStepRate+", "+"\n");
     }
 }
