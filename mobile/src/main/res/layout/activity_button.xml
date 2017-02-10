@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_button"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="wpi.testapplication2.ButtonActivity">
+
+    <ImageButton
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/play"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imageButton"
+        android:onClick="playChosenMusic"/>
+</RelativeLayout>
