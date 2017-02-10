@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         remoteSensorManager.startMeasurement();
 
-        mNavigationViewMenu.clear();
+        /*mNavigationViewMenu.clear();
         remoteSensorManager.getNodes(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
             @Override
             public void onResult(final NodeApi.GetConnectedNodesResult pGetConnectedNodesResult) {
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
             }
-        });
+        });*/
 
     }
 
