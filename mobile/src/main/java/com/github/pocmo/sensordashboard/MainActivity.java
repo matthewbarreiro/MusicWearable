@@ -292,14 +292,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    @Subscribe
+/*    @Subscribe
     public void onNewSensorEvent(final NewSensorEvent event) {
         //((ScreenSlidePagerAdapter) pager.getAdapter()).addNewSensor(event.getSensor());
         //pager.getAdapter().notifyDataSetChanged();
         emptyState.setVisibility(View.GONE);
         notifyUSerForNewSensor(event.getSensor());
 
-    }
+    }*/
 /*
     @Subscribe
     public void onSensorUpdatedEvent(final SensorUpdatedEvent event)
