@@ -148,7 +148,7 @@ public class MusicService extends Service implements
     public void filterSongs()
     {
         if(debug==1)
-            Log.d(TAG,"Songs filtered");
+            Log.d(TAG,"Songs filtered with value: "+curHeartRate);
         if(filteredSongs!=null)
             filteredSongs.clear();
         for(Song song:songs) {
