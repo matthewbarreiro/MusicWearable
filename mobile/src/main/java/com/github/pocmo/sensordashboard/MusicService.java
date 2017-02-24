@@ -42,6 +42,7 @@ public class MusicService extends Service implements
     private int songPosn;
     private final IBinder musicBind = new MusicBinder();
 
+
     private float curHeartRate;
     private float curStepRate;
 
@@ -119,7 +120,7 @@ public class MusicService extends Service implements
         player = new MediaPlayer();
         initMusicPlayer();
         rand=new Random();
-
+        BusProvider.getInstance().register(this);
     }
 
     public void initMusicPlayer()
