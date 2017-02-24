@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         songView = (ListView)findViewById(R.id.song_list);
         songList = new ArrayList<Song>();
         getSongList();
+        refresh(songList);
 
         setController();
 
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void refresh(ArrayList<Song> songs)
     {
+        songView=null;
         if(debug==1)
             Log.d(TAG,"Refresh Ran");
         //sort
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return a.getTitle().compareTo(b.getTitle());
             }
         });
+        songView = (ListView)findViewById(R.id.song_list);
         SongAdapter songAdt = new SongAdapter(this, songs);
         songView.setAdapter(songAdt);
     }
