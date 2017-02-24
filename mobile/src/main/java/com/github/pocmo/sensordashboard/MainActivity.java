@@ -37,20 +37,24 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.widget.ListView;
 import com.github.pocmo.sensordashboard.MusicService.MusicBinder;
+import android.widget.MediaController.MediaPlayerControl;
 
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RefreshView
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RefreshView, MediaPlayerControl
 {
 
     //wear vars
+
     private RemoteSensorManager remoteSensorManager;
     Toolbar mToolbar;
     private View emptyState;
     private NavigationView mNavigationView;
     private Menu mNavigationViewMenu;
     private List<Node> mNodes;
+
+    private MusicController controller;
 
 
     //music player vars
@@ -245,6 +249,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startService(playIntent);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
         }
+    }
+
+    @Override
+    public void    start() {
+
+    }
+    @Override
+    public void    pause() {
+
+    }
+    @Override
+    public int     getDuration() {
+        return 0;
+    }
+    @Override
+    public int     getCurrentPosition() {
+        return 0;
+    }
+    @Override
+    public void    seekTo(int i) {
+
+    }
+    @Override
+    public boolean isPlaying() {
+        return false;
+    }
+    @Override
+    public int     getBufferPercentage() {
+        return 0;
+    }
+    @Override
+    public boolean canPause() {
+        return false;
+    }
+    @Override
+    public boolean canSeekBackward() {
+        return false;
+    }
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+    @Override
+    public int     getAudioSessionId() {
+        return 0;
+    }
+
+    private void setController()
+    {
+        controller = new MusicController(this);
     }
 }
 
