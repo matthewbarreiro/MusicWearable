@@ -87,6 +87,16 @@ public class MusicService extends Service implements
         if(debug==1)
             Log.d(TAG,"Position = "+songPosn);
 
+        if(songPosn<0) {
+            songPosn = 0;
+        }
+
+        if(songPosn>=(5)) {
+            songPosn = 0;
+        }
+
+
+
         Song playSong = filteredSongs.get(songPosn);
 
         songTitle=playSong.getTitle();
@@ -286,8 +296,13 @@ public class MusicService extends Service implements
         }
         else
         {
+            if(songPosn>=songs.size()) {
+                songPosn=0;
+                Log.d(TAG, "songPosn=0");
+            }
             songPosn++;
-            if(songPosn>=songs.size()) songPosn=0;
+            Log.d(TAG, "songPosn++");
+
         }
         playSong();
     }
