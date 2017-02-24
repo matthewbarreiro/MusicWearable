@@ -64,8 +64,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Intent playIntent;
     private boolean musicBound=false;
 
+
     private static final String TAG = "MainActivity";
     private int debug=1;
+    private boolean paused=false, playbackPaused=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         songView = (ListView)findViewById(R.id.song_list);
         songList = new ArrayList<Song>();
         getSongList();
+
+        setController();
 
         if(debug==1)
             Log.d(TAG,"Create");
@@ -123,21 +127,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        BusProvider.getInstance().register(this);
-        List<Sensor> sensors = RemoteSensorManager.getInstance(this).getSensors();
-        remoteSensorManager.startMeasurement();
-
-
+    protected void onPause()
+    {
+        super.onPause();
+        paused=true;
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        BusProvider.getInstance().unregister(this);
+    protected void onResume()
+    {
+        super.onResume();
+        if(paused)
+        {
+            setController();
+            paused=false;
+        }
+    }
 
-        remoteSensorManager.stopMeasurement();
+    @Override
+    protected void onStop() 
+    {
+        controller.hide();
+        super.onStop();
     }
 
     @Override
@@ -165,9 +176,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         switch (item.getItemId())
         {
-            //case R.id.action_shuffle:
-            //    //shuffle
-            //    break;
+            case R.id.action_shuffle:
+  				musicSrv.setShuffle();
+  				break;
             case R.id.action_end:
                 stopService(playIntent);
                 musicSrv=null;
@@ -180,7 +191,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void songPicked(View view)
     {
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
-        musicSrv.playSong();
+        musicSrv.playSong();   
+  		if(playbackPaused)
+  		{
+    		setController();
+    		playbackPaused=false;
+  		}
+  		controller.show(0);
     }
 
     public void getSongList()
@@ -252,53 +269,130 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void    start() {
-
+    public void    start() 
+    {
+    	musicSrv.go();
     }
-    @Override
-    public void    pause() {
 
-    }
     @Override
-    public int     getDuration() {
+    public void    pause() 
+    {
+  		playbackPaused=true;
+  		musicSrv.pausePlayer();
+    }
+
+    @Override
+	public int getDuration() 
+	{
+  		if(musicSrv!=null &amp;&amp; musicBound &amp;&amp; musicSrv.isPng())
+    		return musicSrv.getDur();
+  		else return 0;
+	}
+
+	@Override
+	public int getCurrentPosition()
+	{
+  		if(musicSrv!=null &amp;&amp; musicBound &amp;&amp; musicSrv.isPng())
+    		return musicSrv.getPosn();
+  		else return 0;
+	}
+
+    @Override
+    public void seekTo(int pos) 
+    {
+    	musicSrv.seek(pos);
+    }
+
+	@Override
+	public boolean isPlaying() 
+	{
+  		if(musicSrv!=null &amp;&amp; musicBound)
+    		return musicSrv.isPng();
+  		return false;
+	}
+
+    @Override
+    public int     getBufferPercentage() 
+    {
         return 0;
     }
-    @Override
-    public int     getCurrentPosition() {
-        return 0;
-    }
-    @Override
-    public void    seekTo(int i) {
 
-    }
     @Override
-    public boolean isPlaying() {
-        return false;
+    public boolean canPause() 
+    {
+        return true;
     }
+
     @Override
-    public int     getBufferPercentage() {
-        return 0;
+    public boolean canSeekBackward() 
+    {
+        return true;
     }
+
     @Override
-    public boolean canPause() {
-        return false;
+    public boolean canSeekForward() 
+    {
+        return true;
     }
+
     @Override
-    public boolean canSeekBackward() {
-        return false;
-    }
-    @Override
-    public boolean canSeekForward() {
-        return false;
-    }
-    @Override
-    public int     getAudioSessionId() {
+    public int     getAudioSessionId() 
+    {
         return 0;
     }
 
     private void setController()
     {
         controller = new MusicController(this);
+
+        //forward and back buttons
+        controller.setPrevNextListeners(new View.OnClickListener() 
+        {
+
+  			@Override
+  			public void onClick(View v) 
+  			{
+    		playNext();
+  			}
+  		
+		}, 
+		new View.OnClickListener() 
+		{
+  			@Override
+  			public void onClick(View v) 
+  			{
+    			playPrev();
+  			}
+		});
+
+		controller.setMediaPlayer(this);
+		controller.setAnchorView(findViewById(R.id.song_list)); //MIGHT NEED TO UPDATE THIS WITH REFRESH
+		controller.setEnabled(true);
+
     }
+
+    //play next
+	private void playNext()
+	{
+  		musicSrv.playNext();
+  		if(playbackPaused)
+  		{
+    		setController();
+    		playbackPaused=false;
+  		}
+  		controller.show(0);
+	}
+ 
+//play previous
+	private void playPrev(
+	{
+  		musicSrv.playPrev();
+  		if(playbackPaused)
+  		{
+    		setController();
+    		playbackPaused=false;
+  		}
+  		controller.show(0);
+	}
 }
 

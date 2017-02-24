@@ -24,6 +24,9 @@ import com.github.pocmo.sensordashboard.events.SensorUpdatedEvent;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
+import java.util.Random;
+import android.app.Notification;
+import android.app.PendingIntent;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -46,6 +49,13 @@ public class MusicService extends Service implements
     private int debug=1;
 
     private RefreshView refreshView;
+
+    private String songTitle=&quot;&quot;;
+    private static final int NOTIFY_ID=1;
+
+    private boolean shuffle=false;
+    private Random rand;
+
 
 
     @Override
@@ -77,6 +87,9 @@ public class MusicService extends Service implements
             Log.d(TAG,"Position = "+songPosn);
 
         Song playSong = filteredSongs.get(songPosn);
+
+        songTitle=playSong.getTitle();
+
         //get id
         long currSong = playSong.getID();
         //set uri
@@ -105,6 +118,7 @@ public class MusicService extends Service implements
         //create player
         player = new MediaPlayer();
         initMusicPlayer();
+        rand=new Random();
 
     }
 
@@ -153,10 +167,17 @@ public class MusicService extends Service implements
     {
         filterSongs();
         refreshView.refresh(filteredSongs);
+        if(player.getCurrentPosition()&gt;0)
+        {
+            mp.reset();
+            playNext();
+        }
     }
 
     @Override
-    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) 
+    {
+        mp.reset();
         return false;
     }
 
@@ -165,6 +186,23 @@ public class MusicService extends Service implements
     {
         //start playback
         player.start();     //CHECK
+
+        Intent notIntent = new Intent(this, MainActivity.class);
+        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+        notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+ 
+        Notification.Builder builder = new Notification.Builder(this);
+ 
+        builder.setContentIntent(pendInt)
+        .setSmallIcon(R.drawable.play)
+        .setTicker(songTitle)
+        .setOngoing(true)
+        .setContentTitle(&quot;Playing&quot;)
+        .setContentText(songTitle);
+        Notification not = builder.build();
+ 
+        startForeground(NOTIFY_ID, not);
     }
 
     public class MusicBinder extends Binder
@@ -188,4 +226,76 @@ public class MusicService extends Service implements
         //TextView textView = (TextView) findViewById(R.id.empty_state);
         //textView.append(curHeartRate+", "+curStepRate+", "+"\n");
     }
+
+
+    //playback functions
+    public int getPosn()
+    {
+        return player.getCurrentPosition();
+    }
+ 
+    public int getDur()
+    {
+        return player.getDuration();
+    }
+ 
+    public boolean isPng()
+    {
+        return player.isPlaying();
+    }
+ 
+    public void pausePlayer()
+    {
+        player.pause();
+    }
+ 
+    public void seek(int posn)
+    {
+        player.seekTo(posn);
+    }
+ 
+    public void go()
+    {
+        player.start();
+    }
+
+    public void playPrev()
+    {
+        songPosn--;
+        if(songPosn&lt;0) songPosn=songs.size()-1;
+        playSong();
+    }
+
+    public void playNext()
+    {
+        if(shuffle)
+        {
+            int newSong = songPosn;
+            while(newSong==songPosn)
+            {
+                newSong=rand.nextInt(songs.size());
+            }
+        songPosn=newSong;
+        }
+        else
+        {
+            songPosn++;
+            if(songPosn&gt;=songs.size()) songPosn=0;
+        }
+        playSong();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        stopForeground(true);
+    }
+
+    public void setShuffle()
+    {
+        if(shuffle) shuffle=false;
+        else shuffle=true;
+    }
+
+
 }
