@@ -217,6 +217,8 @@ public class MusicService extends Service implements
     @Subscribe
     public void onSensorUpdatedEvent(final SensorUpdatedEvent event)
     {
+        if(debug==1)
+            Log.d(TAG,"sensor event");
         if(event.getSensor().getId()==13)
         {
             curStepRate=event.getDataPoint().getValues()[0];
@@ -224,6 +226,8 @@ public class MusicService extends Service implements
         else
         {
             curHeartRate=event.getDataPoint().getValues()[0];
+            if(debug==1)
+                Log.d(TAG,"heart rate set to "+curHeartRate);
         }
         //TextView textView = (TextView) findViewById(R.id.empty_state);
         //textView.append(curHeartRate+", "+curStepRate+", "+"\n");
