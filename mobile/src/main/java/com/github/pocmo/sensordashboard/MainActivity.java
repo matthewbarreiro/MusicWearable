@@ -176,9 +176,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         switch (item.getItemId())
         {
-            case R.id.action_shuffle:
-  				musicSrv.setShuffle();
-  				break;
+//            case R.id.action_shuffle:
+//  				musicSrv.setShuffle();
+//  				break;
             case R.id.action_end:
                 stopService(playIntent);
                 musicSrv=null;
@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
 	public int getDuration() 
 	{
-  		if(musicSrv!=null &amp;&amp; musicBound &amp;&amp; musicSrv.isPng())
+  		if(musicSrv!=null && musicBound && musicSrv.isPng())
     		return musicSrv.getDur();
   		else return 0;
 	}
@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	public int getCurrentPosition()
 	{
-  		if(musicSrv!=null &amp;&amp; musicBound &amp;&amp; musicSrv.isPng())
+  		if(musicSrv!=null && musicBound && musicSrv.isPng())
     		return musicSrv.getPosn();
   		else return 0;
 	}
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	public boolean isPlaying() 
 	{
-  		if(musicSrv!=null &amp;&amp; musicBound)
+  		if(musicSrv!=null && musicBound)
     		return musicSrv.isPng();
   		return false;
 	}
@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
  
 //play previous
-	private void playPrev(
+	private void playPrev()
 	{
   		musicSrv.playPrev();
   		if(playbackPaused)
