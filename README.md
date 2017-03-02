@@ -1,40 +1,36 @@
-#MusicMQP
-possibly useful:
-	
-~~~~
-public class MainActivity extends Activity {
+# Music Wearable MQP 2017
+This app ...
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-	}
+## Notes/Helpful Info:
+ - You will need to enable developer mode on both your phone and watch. This is generally accomplished by rapidly tapping "Build Number" in "About Phone/Device/Etc" within settings, but YMMV.
+ - Make sure to authorize both the phone and watch for ADB
+ - 
 
-	public void sendMessage(View v){
+### Debugging Over Bluetooth:
+After configuring and enabling ADB (see Source: [Android Developers](https://developer.android.com/training/wearables/apps/bt-debugging.html "Debugging over Bluetooth | Android Developers") and ADB help files), run the following to link the debugger to the watch: 
 
+    adb forward tcp:4444 localabstract:/adb-hub
+    adb connect 127.0.0.1:4444
 
-		
-		TextView textView = (TextView) findViewById(R.id.empty_state);
-		textView.append(messageString+"\n")
-	}
+Source: [Android Developers](https://developer.android.com/training/wearables/apps/bt-debugging.html "Debugging over Bluetooth | Android Developers")
 
-}
-	
-~~~~
+### Updating Watch App:
+The original Sensor Dashboard app did not have any main activity for the Android Wear component, so the app cannot be pushed and run directly from Android Studio. Instead, you must build the APK (Build -> Build APK from within Android Studio) and then install it manually via ADB.
+
+First install:
+`adb -s 127.0.0.1:4444 install "[PATH]\wear-debug.apk" `
+
+Update (replace) the app:
+`adb -s 127.0.0.1:4444 install -r "[PATH]\wear-debug.apk" `
+
+And it take a long time because Bluetooth is relatively slow.
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 # SensorDashboard
 
-A sensor dashboard for Android plotting all sensor data of your Android wearable.
-
-![Screenshot](screenshot.png)
-
 Written at the Android Wear Hackathon 2014 in London by [Juhani Lehtimäki](https://plus.google.com/+JuhaniLehtim%C3%A4ki/posts), [Benjamin Stürmer](https://stuermer-benjamin.de/) and [Sebastian Kaspari](https://plus.google.com/+SebastianKaspari/posts).
 
-![](https://lh3.ggpht.com/ZEl2CgOtJdaSu9rOA_j1YwDh1zzq0nTjGoO5IfWcoFtza-0Noz7n6qP09sRWk8tx8Q=h900-rw)
-
-Get it from Google Play: https://play.google.com/store/apps/details?id=wpi.pocmo.sensordashboard
 
 ## License
 
