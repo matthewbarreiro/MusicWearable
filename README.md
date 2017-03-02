@@ -34,7 +34,7 @@ Written at the Android Wear Hackathon 2014 in London by [Juhani Lehtimäki](http
 
 ![](https://lh3.ggpht.com/ZEl2CgOtJdaSu9rOA_j1YwDh1zzq0nTjGoO5IfWcoFtza-0Noz7n6qP09sRWk8tx8Q=h900-rw)
 
-Get it from Google Play: https://play.google.com/store/apps/details?id=com.github.pocmo.sensordashboard
+Get it from Google Play: https://play.google.com/store/apps/details?id=wpi.pocmo.sensordashboard
 
 ## License
 

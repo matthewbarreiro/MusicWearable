@@ -25,7 +25,7 @@
             />
 
 
-        <com.github.pocmo.sensordashboard.ui.SensorGraphView
+        <com.wpi.mqp.musicwearable17.ui.SensorGraphView
             android:id="@+id/graph_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/graph_view_height"

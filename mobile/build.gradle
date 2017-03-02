@@ -5,7 +5,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.github.pocmo.sensordashboard"
+        applicationId "com.wpi.pocmo.musicwearable17"
         minSdkVersion 18
         targetSdkVersion 22
         versionCode 5
