@@ -1,42 +1,41 @@
 # Music Wearable MQP 2017
-This app ...
+This app is designed to select music based on fitness data collected on an Android Wear device. This implementation primarily serves as a proof-of-concept, and performs as such.
 
 ## Notes/Helpful Info:
- - You will need to enable developer mode on both your phone and watch. This is generally accomplished by rapidly tapping "Build Number" in "About Phone/Device/Etc" within settings, but YMMV.
+ - This App was written for Android Wear  1.5 (1.5.0.3336103 if you really care) on Android 6.0.1. NO idea what will/will not work on the recently released Wear 2.0.
+ - Unpairing an Android Wear device from a phone causes the Wear device to factory reset. AKA you can't just share the device between phones.
+ - You will need to enable developer mode on both your phone and watch. This is generally accomplished by rapidly tapping "Build Number" in "About Phone/Device/Etc" within device settings, but YMMV.
  - Make sure to authorize both the phone and watch for ADB
- - 
 
  ### Using Android Studio and Wear with no Main Activity:
- 
- http://stackoverflow.com/a/40113469
+
+To fix the error in Android Studio that doesn't allow directly launching the Wear component ("Main Activity Not Found"), do the following ([via StackOverflow](http://stackoverflow.com/a/40113469)):
+Run -> Edit Configurations -> Android App -> wear -> General -> Launch Options -> **Launch: Nothing**
+
+Alternatively, you can build the apks (Build -> Build APK from within Android Studio) and then install it manually via ADB (see below for how to connect to wear device over Bluetooth).
 
 ### Debugging Over Bluetooth:
 After configuring and enabling ADB (see Source: [Android Developers](https://developer.android.com/training/wearables/apps/bt-debugging.html "Debugging over Bluetooth | Android Developers") and ADB help files), run the following to link the debugger to the watch: 
 
-    adb forward tcp:4444 localabstract:/adb-hub
-    adb connect 127.0.0.1:4444
+    adb forward tcp:4444 localabstract:/adb-hub     //Any port you have full access to should work.
+    adb connect 127.0.0.1:4444                          
+
+You can then run any ADB command as follows:
+`adb -s 127.0.0.1:4444 [some command]`
 
 Source: [Android Developers](https://developer.android.com/training/wearables/apps/bt-debugging.html "Debugging over Bluetooth | Android Developers")
 
-### Updating Watch App:
-The original Sensor Dashboard app did not have any main activity for the Android Wear component, so the app cannot be pushed and run directly from Android Studio. Instead, you must build the APK (Build -> Build APK from within Android Studio) and then install it manually via ADB.
 
-First install:
-`adb -s 127.0.0.1:4444 install "[PATH]\wear-debug.apk" `
+# Credits
 
-Update (replace) the app:
-`adb -s 127.0.0.1:4444 install -r "[PATH]\wear-debug.apk" `
-
-And it take a long time because Bluetooth is relatively slow.
+Sensor Dashboard was originally written at the Android Wear Hackathon 2014 in London by [Juhani Lehtimäki](https://plus.google.com/+JuhaniLehtim%C3%A4ki/posts), [Benjamin Stürmer](https://stuermer-benjamin.de/) and [Sebastian Kaspari](https://plus.google.com/+SebastianKaspari/posts). It is avalible under the Apache 2.0 License (below).
 
 
-------------------------------------------------------------------------------------------------------------------------------------------
-# SensorDashboard
+## Licenses
 
-Written at the Android Wear Hackathon 2014 in London by [Juhani Lehtimäki](https://plus.google.com/+JuhaniLehtim%C3%A4ki/posts), [Benjamin Stürmer](https://stuermer-benjamin.de/) and [Sebastian Kaspari](https://plus.google.com/+SebastianKaspari/posts).
+Parts of this code are licensed as follows:
 
-
-## License
+### License (Sensor Dashboard)
 
     Copyright 2014 Juhani Lehtimäki, Benjamin Stürmer, Sebastian Kaspari
     
