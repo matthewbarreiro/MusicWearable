@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.wpi.mqp.musicwearable17.data.Sensor;
+import com.wpi.mqp.musicwearable17.events.BusProvider;
 import com.google.android.gms.wearable.Node;
 
 import android.os.IBinder;
@@ -125,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause()
     {
         super.onPause();
+        BusProvider.getInstance().unregister(this);
+        remoteSensorManager.stopMeasurement();
         paused=true;
     }
 
@@ -132,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume()
     {
         super.onResume();
+
+        BusProvider.getInstance().register(this);
+        List<Sensor> sensors = RemoteSensorManager.getInstance(this).getSensors();
+        remoteSensorManager.startMeasurement();
+
         if(paused)
         {
             setController();
@@ -140,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onStop() 
+    protected void onStop()
     {
         controller.hide();
         super.onStop();
@@ -186,13 +194,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void songPicked(View view)
     {
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
-        musicSrv.playSong();   
-  		if(playbackPaused)
-  		{
-    		setController();
-    		playbackPaused=false;
-  		}
-  		controller.show(0);
+        musicSrv.playSong();
+        if(playbackPaused)
+        {
+            setController();
+            playbackPaused=false;
+        }
+        controller.show(0);
     }
 
     public void getSongList()
@@ -264,74 +272,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void    start() 
+    public void    start()
     {
-    	musicSrv.go();
+        musicSrv.go();
     }
 
     @Override
-    public void    pause() 
+    public void    pause()
     {
-  		playbackPaused=true;
-  		musicSrv.pausePlayer();
+        playbackPaused=true;
+        musicSrv.pausePlayer();
     }
 
     @Override
-	public int getDuration() 
-	{
-  		if(musicSrv!=null && musicBound && musicSrv.isPng())
-    		return musicSrv.getDur();
-  		else return 0;
-	}
-
-	@Override
-	public int getCurrentPosition()
-	{
-  		if(musicSrv!=null && musicBound && musicSrv.isPng())
-    		return musicSrv.getPosn();
-  		else return 0;
-	}
-
-    @Override
-    public void seekTo(int pos) 
+    public int getDuration()
     {
-    	musicSrv.seek(pos);
+        if(musicSrv!=null && musicBound && musicSrv.isPng())
+            return musicSrv.getDur();
+        else return 0;
     }
 
-	@Override
-	public boolean isPlaying() 
-	{
-  		if(musicSrv!=null && musicBound)
-    		return musicSrv.isPng();
-  		return false;
-	}
+    @Override
+    public int getCurrentPosition()
+    {
+        if(musicSrv!=null && musicBound && musicSrv.isPng())
+            return musicSrv.getPosn();
+        else return 0;
+    }
 
     @Override
-    public int     getBufferPercentage() 
+    public void seekTo(int pos)
+    {
+        musicSrv.seek(pos);
+    }
+
+    @Override
+    public boolean isPlaying()
+    {
+        if(musicSrv!=null && musicBound)
+            return musicSrv.isPng();
+        return false;
+    }
+
+    @Override
+    public int     getBufferPercentage()
     {
         return 0;
     }
 
     @Override
-    public boolean canPause() 
+    public boolean canPause()
     {
         return true;
     }
 
     @Override
-    public boolean canSeekBackward() 
+    public boolean canSeekBackward()
     {
         return true;
     }
 
     @Override
-    public boolean canSeekForward() 
+    public boolean canSeekForward()
     {
         return true;
     }
 
     @Override
-    public int     getAudioSessionId() 
+    public int     getAudioSessionId()
     {
         return 0;
     }
@@ -341,53 +349,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         controller = new MusicController(this);
 
         //forward and back buttons
-        controller.setPrevNextListeners(new View.OnClickListener() 
-        {
+        controller.setPrevNextListeners(new View.OnClickListener()
+                                        {
 
-  			@Override
-  			public void onClick(View v) 
-  			{
-    		playNext();
-  			}
-  		
-		}, 
-		new View.OnClickListener() 
-		{
-  			@Override
-  			public void onClick(View v) 
-  			{
-    			playPrev();
-  			}
-		});
+                                            @Override
+                                            public void onClick(View v)
+                                            {
+                                                playNext();
+                                            }
 
-		controller.setMediaPlayer(this);
-		controller.setAnchorView(findViewById(R.id.song_list)); //MIGHT NEED TO UPDATE THIS WITH REFRESH
-		controller.setEnabled(true);
+                                        },
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        playPrev();
+                    }
+                });
+
+        controller.setMediaPlayer(this);
+        controller.setAnchorView(findViewById(R.id.song_list)); //MIGHT NEED TO UPDATE THIS WITH REFRESH
+        controller.setEnabled(true);
 
     }
 
     //play next
-	private void playNext()
-	{
-  		musicSrv.playNext();
-  		if(playbackPaused)
-  		{
-    		setController();
-    		playbackPaused=false;
-  		}
-  		controller.show(0);
-	}
- 
-//play previous
-	private void playPrev()
-	{
-  		musicSrv.playPrev();
-  		if(playbackPaused)
-  		{
-    		setController();
-    		playbackPaused=false;
-  		}
-  		controller.show(0);
-	}
+    private void playNext()
+    {
+        musicSrv.playNext();
+        if(playbackPaused)
+        {
+            setController();
+            playbackPaused=false;
+        }
+        controller.show(0);
+    }
+
+    //play previous
+    private void playPrev()
+    {
+        musicSrv.playPrev();
+        if(playbackPaused)
+        {
+            setController();
+            playbackPaused=false;
+        }
+        controller.show(0);
+    }
 }
 
