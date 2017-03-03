@@ -6,6 +6,10 @@ This app ...
  - Make sure to authorize both the phone and watch for ADB
  - 
 
+ ### Using Android Studio and Wear with no Main Activity:
+ 
+ http://stackoverflow.com/a/40113469
+
 ### Debugging Over Bluetooth:
 After configuring and enabling ADB (see Source: [Android Developers](https://developer.android.com/training/wearables/apps/bt-debugging.html "Debugging over Bluetooth | Android Developers") and ADB help files), run the following to link the debugger to the watch: 
 
